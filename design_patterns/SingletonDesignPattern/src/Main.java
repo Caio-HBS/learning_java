@@ -1,5 +1,36 @@
+import java.util.LinkedList;
+
 public class Main {
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+
+        // How you create a new instance of Singleton.
+        Singleton newInstance = Singleton.getInstance();
+
+        // Get unique id for instance object.
+        System.out.println("1st Instance ID: " + System.identityHashCode(newInstance));
+
+        // Get all the letters stored in the List.
+        System.out.println(newInstance.getLetterList());
+
+        LinkedList<String> playerOneTiles = newInstance.getTiles(7);
+
+        System.out.println("Player 1: " + playerOneTiles);
+
+        System.out.println(newInstance.getLetterList());
+
+        // Try getting a new instance using getInstance.
+        Singleton instanceTwo = Singleton.getInstance();
+
+        // Get unique id for the new instance object.
+        System.out.println("2nd Instance ID: " + System.identityHashCode(instanceTwo));
+
+        // This returns the value of the first instance created.
+        System.out.println(instanceTwo.getLetterList());
+
+        // Player 2 draws 7 tiles.
+        LinkedList<String> playerTwoTiles = newInstance.getTiles(7);
+
+        System.out.println("Player 2: " + playerTwoTiles);
     }
 }

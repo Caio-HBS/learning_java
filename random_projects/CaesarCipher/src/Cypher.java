@@ -1,50 +1,88 @@
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
 public class Cypher {
 
-    private List<String> alphabet = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
+    private final List<String> capAlphabet = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N",
             "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
 
-    public List<String> getAlphabet() {
-        return alphabet;
+    private final List<String> stdAlphabet = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
+            "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+
+    /**
+     * Returns the capitalized alphabet.
+     * @return capitalized alphabet.
+     */
+    public List<String> getCapAlphabet() {
+        return capAlphabet;
     }
 
-    public String getDecrypted(String cypher, int type, int cypherNum) {
-        List<String> alphabet = getAlphabet();
+    /**
+     * Returns the non-capitalized alphabet.
+     * @return non-capitalized alphabet.
+     */
+    public List<String> getStdAlphabet() {
+        return stdAlphabet;
+    }
 
-        return switch (type) {
-            // Single letter.
-            case 0 -> {
-                if (!alphabet.contains(cypher)) {
-                    System.out.println("\nERROR: letter not present in alphabet\n");
-                    yield null;
-                }
+    /**
+     * Returns the encrypted/decrypted string based on the Caesar Cypher method.
+     * @param cypher a String with the letters to be capitalized. Can have numbers, punctuation, whitespaces etc...
+     * @param cypherNum the number used to encrypt/decrypt the original String
+     * @return the encrypted/decrypted String based on the chosen number.
+     */
+    public String getDecrypted(String cypher, int cypherNum) {
+        List<String> alphabet;
+        StringBuilder decrypted = new StringBuilder();
 
-                int foundIndex = alphabet.indexOf(cypher);
-                yield alphabet.get(foundIndex + cypherNum);
-            }
-            // Single word.
-            case 1 -> {
-                String decryptedWord = "";
-                for (char letter : cypher.toCharArray()) {
-                    String strLetter = String.valueOf(letter);
-                    if (!alphabet.contains(strLetter)) {
-                        System.out.println("\nERROR: letter not present in alphabet\n");
-                        yield null;
-                    }
-                    int foundIndex = alphabet.indexOf(strLetter);
+        for (char letter : cypher.toCharArray()) {
+            String strLetter = String.valueOf(letter);
 
-                    decryptedWord += alphabet.get(foundIndex + cypherNum);
-                }
-                yield decryptedWord;
+            if (Character.isUpperCase(letter)) {
+                alphabet = getCapAlphabet();
+            } else {
+                alphabet = getStdAlphabet();
             }
-            // Invalid.
-            default -> {
-                System.out.println("\nERROR: invalid type\n");
-                yield null;
+
+            if (!alphabet.contains(strLetter)) {
+                decrypted.append(strLetter);
+                continue;
             }
-        };
+
+            int foundIndex = alphabet.indexOf(strLetter);
+
+            int computedIndex = getComputedIndex(cypherNum, foundIndex);
+
+            decrypted.append(alphabet.get(computedIndex));
+        }
+        return decrypted.toString();
+    }
+
+
+    /**
+     * Receives the number for encrypting/decrypting the desired letter on a Caesar cypher and the index for that letter
+     * on the alphabet. Returns the final index for encrypted/decrypted letter after cyphering the original desired letter
+     * @param cypherNum an integer used to create the cypher
+     * @param foundIndex the corresponding index of the desired letter in the alphabet
+     * @return the resulting index for encrypting/decrypting the desired letter
+     */
+    private static int getComputedIndex(int cypherNum, int foundIndex) {
+        int computedIndex = foundIndex + cypherNum;
+
+        if (computedIndex < 0) {
+            if (computedIndex < -26) {
+                computedIndex = (computedIndex % 26) + 26;
+            } else {
+                computedIndex += 26;
+            }
+        }
+        if (computedIndex > 25) {
+            if (computedIndex > 26) {
+                computedIndex = (computedIndex % 26);
+            } else {
+                computedIndex -= 26;
+            }
+        }
+        return computedIndex;
     }
 }
